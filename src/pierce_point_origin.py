@@ -63,9 +63,6 @@ class PiercePointOrigin:
         self.lambda_ppo = None
         self.height_sph = None
 
-    def __str__(self):
-        return self.strg
-
     # =========================================================================
     #                        Get Pierce Point Parameters
     # =========================================================================

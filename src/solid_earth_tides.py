@@ -1386,6 +1386,7 @@ def GETUTCMTAI(Tsec):
     else:
         print('FATAL ERROR --')
         print('fell thru tests in gpsleap()')
+        tai_utc = np.nan
 
 # ** return utc - tai (in seconds)
 
