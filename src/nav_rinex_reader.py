@@ -134,10 +134,10 @@ class EphemerisList:
                 while ephemeris.list_of_ephemeris[idx].iode != iode:
                     idx += 1
             elif gnss == "R":
-                tb_min = ephemeris.list_of_ephemeris[idx].tb / 900  # [15 min]
+                tb_min = ephemeris.list_of_ephemeris[idx].tb / 900 # [min]
                 while tb_min != iode:
                     idx += 1
-                    tb_min = ephemeris.list_of_ephemeris[idx].tb / 900
+                    tb_min = ephemeris.list_of_ephemeris[idx].tb / 900 # [min]
             elif gnss == "C":
                 while np.mod(ephemeris.list_of_ephemeris[idx].toc / 720, 240) != iode:
                     idx += 1
@@ -436,9 +436,10 @@ class EphemerisGLO:
         self.age = float(line[61:80])
 
         # computation of tb reference time for the ephemeris
-        # (with correction for Moskow time
-        self.nd = int(self.toc / (3600 * 24))  # nday in the week UTC time
-        self.tb = self.toc - self.nd * 3600 * 24 + 3 * 3600
+        # with correction for Moskow time
+        mow_time = self.toc + 3 * 3600  # seconds of week (Moskow time)
+        self.nd = int(mow_time / (3600 * 24))  # nday in the week (Moskow time)
+        self.tb = mow_time - self.nd * 3600 * 24  # seconds of day (Moskow time)
 
     def __repr__(self):
         strg = ('Class with satellite ephemeris information as objects.' +
