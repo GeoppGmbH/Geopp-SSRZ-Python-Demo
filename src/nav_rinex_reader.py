@@ -133,14 +133,32 @@ class EphemerisList:
             if (gnss == "G") or (gnss == "E") or (gnss == "J"):
                 while ephemeris.list_of_ephemeris[idx].iode != iode:
                     idx += 1
+                    if idx == len(ephemeris.list_of_ephemeris):
+                        print("".join(["Warning: ", gnss, str(prn),
+                                       " IODE not found. Considering the ",
+                                       "first ephemeris block."]))
+                        idx = 0
+                        break
             elif gnss == "R":
                 tb_min = ephemeris.list_of_ephemeris[idx].tb / 900 # [min]
                 while tb_min != iode:
                     idx += 1
+                    if idx == len(ephemeris.list_of_ephemeris):
+                        print("".join(["Warning: ", gnss, str(prn),
+                                       " IODE not found. Considering the ",
+                                       "first ephemeris block."]))
+                        idx = 0
+                        break
                     tb_min = ephemeris.list_of_ephemeris[idx].tb / 900 # [min]
             elif gnss == "C":
                 while np.mod(ephemeris.list_of_ephemeris[idx].toc / 720, 240) != iode:
                     idx += 1
+                    if idx == len(ephemeris.list_of_ephemeris):
+                        print("".join(["Warning: ", gnss, str(prn),
+                                       " IODE not found. Considering the ",
+                                       "first ephemeris block."]))
+                        idx = 0
+                        break
             else:
                 print("".join(["Warning: ", gnss, " not implemented yet."]))
 

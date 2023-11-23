@@ -258,6 +258,12 @@ def gps_time_from_y_doy_hms(year, doy, hh, mm, sec):
     time = (round((week - int(week)) * 7) *
             Constants().day_seconds + hh * 3600.0e0 +
             mm * 60.0e0 + sec)
+    # check if seconds are greater than a week
+    if time >= Constants().week_seconds:
+        week += 1
+        time -= Constants().week_seconds
+    else:
+        pass
     return int(week), time
 
 

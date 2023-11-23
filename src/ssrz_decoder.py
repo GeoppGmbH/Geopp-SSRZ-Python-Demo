@@ -159,7 +159,7 @@ class SSRZDecoder:
                 gri_temp = self.corrections.gri[t_blk_index][sat_group_index]
                 if len(gri_temp) != len(self.metadata.grid_gr):
                     for ii in range(len(self.metadata.grid_gr) - len(gri_temp)):
-                        gri_temp.append([])
+                        gri_temp.append(None)
                     self.corrections.update(gri=gri_temp,
                                             t_blk=t_blk_index,
                                             sat_gr=sat_group_index)
@@ -181,7 +181,7 @@ class SSRZDecoder:
             grt_temp = self.corrections.grt
             if len(grt_temp) != len(self.metadata.grid_gr):
                 for ii in range(len(self.metadata.grid_gr) - len(grt_temp)):
-                    grt_temp.append([])
+                    grt_temp.append(None)
                 self.corrections.update(grt=grt_temp)
             else:
                 pass
