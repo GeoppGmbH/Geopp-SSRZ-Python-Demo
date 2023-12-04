@@ -722,7 +722,7 @@ class ssr2osr:
                          'GT(m),RT(m),GRT(m),modelZTDdry(m),modelZTDwet(m),',
                          'modelSTDdry(m),modelSTDwet(m),windup(cyc),relativity(m),',
                          'solidEarthTide dN(m),solidEarthTide dE(m),',
-                         'solidEarthTide dU(m)',
+                         'solidEarthTide dU(m),',
                          'mappingImprovement(m)']))
 
 
