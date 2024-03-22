@@ -67,10 +67,10 @@
 """
 
 import cbitstruct as bitstruct
+import numpy as np
 import ssrz_blocks as blocks
 import ssrz_fields as fields
 import ssrz_messages_temp as ssrz_msg
-import numpy as np
 
 
 class SSRZDecoder:

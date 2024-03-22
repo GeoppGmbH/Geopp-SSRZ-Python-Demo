@@ -1,0 +1,6 @@
+__pycache__/
+/.venv
+/.vscode
+*.pyc
+*.whl
+/test_data/

@@ -28,64 +28,64 @@
     location.
     ***************************************************************************
 """
+from datetime import datetime, timedelta
 import numpy as np
 from numpy import linalg as LA
 import space_time_trafo as trafo
 import iono_computation
 import tropo_computation
-import pierce_point as pp
 from ephemeris import Orbit
 import solid_earth_tides as tides
-from datetime import datetime, timedelta
 
 
 class ssr2osr:
+    """
+        Class to compute the SSR influence for a user position using
+        decoded SSRZ messages.
+
+        Input:
+            - ssr: ssr parameters at the considered epoch
+            - md:  decoded metadata
+            - week: GPS week of the computation
+            - epoch: GPS TOW of the computation
+            - nav_data: navigation data acquired from navigation RINEX
+            - receiver: receiver WGS84 ellipsoidal coordinates and
+                        cartesian coordinates
+            - f_out_iono: debug file for global vtec computation
+            - f_dbg: debug file
+            - do_not_use_gnss: list of constellations not to be used
+            - csv_out: if True, output SSI in csv format
+            - sed_perm: if True, zero_tide tides in solid Earth tides
+        Output:
+            callable objects for the following SSR influences:
+            - orbit
+            - clock
+            - code bias
+            - phase bias
+            - global ionosphere
+            - global satellite-dependent ionosphere
+            - regional ionosphere
+            - grid ionosphere
+            - regional troposphere
+            - grid troposphere
+            - shapiro effect
+            - wind-up effect
+
+        *******************************************************************
+        Description:
+        first, the satellite state vector is computed passing the ephemeris
+        message to the class Orbit. Second, the ssr influence on the user
+        position is computed for each satellite for all the components by
+        calling the classes OrbCorr, ClockCorr, CodeBias, PhaseBias,
+        Ionosphere, Troposphere, ShapiroEffect and WindUp.
+        The __str__ method can be used to print the content of the
+        message in a human readable format.
+        *******************************************************************
+    """
     def __init__(self, ssr, md, week, epoch, nav_data, receiver,
                  f_out_iono, f_dbg, do_not_use_gnss=[], csv_out=False,
                  do_sed=True, sed_perm=False):
-        """
-            Class to compute the SSR influence for a user position using
-            decoded SSRZ messages.
 
-            Input:
-                - ssr: ssr parameters at the considered epoch
-                - md:  decoded metadata
-                - week: GPS week of the computation
-                - epoch: GPS TOW of the computation
-                - nav_data: navigation data acquired from navigation RINEX
-                - receiver: receiver WGS84 ellipsoidal coordinates and
-                            cartesian coordinates
-                - f_out_iono: debug file for global vtec computation
-                - f_dbg: debug file
-                - do_not_use_gnss: list of constellations not to be used
-                - csv_out: if True, output SSI in csv format
-                - sed_perm: if True, zero_tide tides in solid Earth tides
-            Output:
-                callable objects for the following SSR influences:
-                - orbit
-                - clock
-                - code bias
-                - phase bias
-                - global ionosphere
-                - global satellite-dependent ionosphere
-                - regional ionosphere
-                - grid ionosphere
-                - regional troposphere
-                - grid troposphere
-                - shapiro effect
-                - wind-up effect
-
-            *******************************************************************
-            Description:
-            first, the satellite state vector is computed passing the ephemeris
-            message to the class Orbit. Second, the ssr influence on the user
-            position is computed for each satellite for all the components by
-            calling the classes OrbCorr, ClockCorr, CodeBias, PhaseBias,
-            Ionosphere, Troposphere, ShapiroEffect and WindUp.
-            The __str__ method can be used to print the content of the
-            message in a human readable format.
-            *******************************************************************
-        """
         # compute doy
         [iy, doy, hh, mm, ss] = trafo.gpsTime2y_doy_hms(week, epoch)
         # Transform epoch from gps to Gregorian calendar format
@@ -138,13 +138,12 @@ class ssr2osr:
         # low rate msg
         # ****************************
         ii = 0
-        for bb in range(len(ssr.lr)):
-            for sg in range(len(ssr.lr[bb])):
-                lr_msg = ssr.lr[bb][sg]
-                for kk in range(len(lr_msg.sv_array)):
+        for bb, low_rate in enumerate(ssr.lr):
+            for sg, lr_msg in enumerate(low_rate):
+                for kk, lr_sv_array in enumerate(lr_msg.sv_array):
                     ii = kk
                     self.sats.append([])
-                    self.sats[ii] = lr_msg.sv_array[ii]
+                    self.sats[ii] = lr_sv_array
                     # append gnss component
                     self.orb.append([])
                     self.clk.append([])
@@ -187,9 +186,9 @@ class ssr2osr:
                     if hr_msg.time_tag_15 < lr_msg.time_tag_15:
                         return
                     # find gnss index for hr msg
-                    for hh in range(len(hr_msg.sv_array)):
-                        if len(hr_msg.sv_array[hh]) > 0:
-                            if hr_msg.sv_array[hh][0][0] == gnss:
+                    for hh, hr_sv_array in enumerate(hr_msg.sv_array):
+                        if len(hr_sv_array) > 0:
+                            if hr_sv_array[0][0] == gnss:
                                 kk_hr = hh  # gnss index for hr msg
                                 break
                         else:
@@ -199,8 +198,7 @@ class ssr2osr:
                     # ****************************
                     # loop over satellites
                     # ****************************
-                    for jj in range(len(sat_list)):
-                        sat = sat_list[jj]
+                    for jj, sat in enumerate(sat_list):
                         # append satellite component per gnss
                         self.orb[ii].append([])
                         self.clk[ii].append([])
@@ -455,8 +453,7 @@ class ssr2osr:
                         mfi = 0.0e0
                         ssr_rt = ssr.rt
                         if (np.any(ssr_rt)):
-                            for cc in range(len(ssr_rt.components)):
-                                comp = ssr.rt.components[cc]
+                            for cc, comp in enumerate(ssr_rt.components):
                                 # check the time tag w.r.t. low rate
                                 if ssr_rt.time_tag_15 >= lr_msg.time_tag_15:
                                     tropo_type = 'rt'
@@ -492,8 +489,7 @@ class ssr2osr:
                         ssr_grt = get_closest_grid(corr_list=ssr.grt,
                                                    llh0=[lat, lon, height])
                         if (np.any(ssr_grt)):
-                            for cc in range(len(ssr_grt.components)):
-                                comp = ssr_grt.components[cc]
+                            for cc, comp in enumerate(ssr_grt.components):
                                 tropo_type = 'grt'
                                 self.grt[ii][jj] += Troposphere(epoch, ssr_grt,
                                                                 receiver['ellipsoidal'],
@@ -870,22 +866,31 @@ class Ionosphere:
                                                           rsi_ppo=rsi_ppo,
                                                           week=week,
                                                           ephemeris=ephemeris)
+        # Select type of ionosphere
         # Global vtec
         if iono_type == 'gvi':
             print(iono_influence, file=dbg_out)
-        self.corr = iono_influence.stec   # [TECU]
-        self.corr_f1 = iono_influence.stec_corr_f1  # [m]
-        # Global slant
-        if iono_type == 'gsi':
+            # Global slant
+        elif iono_type == 'gsi':
             self.gsi_ppo = iono_influence.gsi_ppo
         # Regional slant
-        if iono_type == 'rsi':
+        elif iono_type == 'rsi':
             self.rsi_ppo = iono_influence.rsi_ppo
-
+        # Gridded iono
+        elif iono_type == 'gri':
+            pass
+        else:
+            self.corr_f1 = 0.0
+            raise ValueError("".join([iono_type,
+                                      " not supported. Corr set to 0."]))
+        self.corr = iono_influence.stec   # [TECU]
+        self.corr_f1 = iono_influence.stec_corr_f1  # [m]
 
 # =============================================================================
 #    Troposphere influence
 # =============================================================================
+
+
 class Troposphere:
     """
         It passes the input values to the TropoComputation class for computing
@@ -1043,22 +1048,23 @@ class WindUp:
 # =============================================================================
 
 
-def get_closest_grid(corr_list, llh0):
-    """ 
+def get_closest_grid(corr_list:list, llh0:list):
+    """
         Method to retrieve closest grid to query point.
         Grids with all nan values are excluded
+
+        :param corr_list: list of grid corrections
+        :param llh0: ellipsoidal coordinates [deg, deg, m]
     """
     # Remove empty grids
     corr_no_empty_list = list(filter(None, corr_list))
     # Compute closest distance to query location
     corr_out = None
     min_distance = 1.0e10
-    for ii in range(len(corr_no_empty_list)):
-        corr = corr_no_empty_list[ii]
+    for corr in corr_no_empty_list:
         distance_list = []
         for chain in corr.chains:
-            for jj in range(len(chain.lat)):
-                lat = np.rad2deg(chain.lat[jj])
+            for jj, lat in enumerate(chain.lat):
                 lon = np.rad2deg(chain.lon[jj])
                 hgt = chain.hgt[jj]
                 # transform to xyz
@@ -1067,7 +1073,7 @@ def get_closest_grid(corr_list, llh0):
                 enu = trafo.cart2enu(xyz, llh0=llh0)
                 distance_list.append(np.linalg.norm(enu))
         # Calculate minimum distance of the grid from the query point
-        distance = np.nanmin(np.array(distance_list))
+        distance = np.nanmean(np.array(distance_list))
         # Save this distance as the minimum distance for the current grid
         if distance < min_distance:
             min_distance = distance

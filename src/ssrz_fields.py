@@ -44,7 +44,7 @@ import numpy as np
 # =============================================================================
 #                           Complementary functions
 # =============================================================================
-def prefix_coding(msg, n0, db, n_max=None, unpacked_bits=None):
+def prefix_coding(msg, n0, db, n_max=0, unpacked_bits=None):
     """
         Function to compute the decode the prefix codes used in the msgs.
         Input:
@@ -83,7 +83,7 @@ def prefix_coding(msg, n0, db, n_max=None, unpacked_bits=None):
     # the loop continue until the last n0 bits are equal to n0 times '1'
     # or until the number of delta bits to add is lower than n_max
     while test2check[-delta:] == fail:
-        if n_max is None:
+        if n_max == 0:
             delta += db
         else:
             if delta < n_max:
