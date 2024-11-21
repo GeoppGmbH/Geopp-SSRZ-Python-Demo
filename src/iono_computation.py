@@ -22,8 +22,8 @@
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import numpy as np
 import math
+import numpy as np
 from numpy import linalg as LA
 import space_time_trafo as trafo
 import interp_module as interp
@@ -32,12 +32,12 @@ import pierce_point_origin as ppo
 
 
 class IonoComputation:
-    def __init__(self, ssr, epoch, isys, isat, state, rec, system, prn, f1,
+    def __init__(self, ssr, epoch, state, rec, system, prn, f1,
                  iono_type, week=None, ephemeris=None, md=None,
                  el_ellips=None, gsi_ppo=None, rsi_ppo=None):
         """
         Class with methods to compute ionospheric influence on a receiver
-        location for a particular satellite and for a specific frequency.    
+        location for a particular satellite and for a specific frequency.
         ***********************************************************************
         Description:
         the class IonoComputation includes methods to compute the STEC
@@ -57,8 +57,6 @@ class IonoComputation:
             - ID        : ID of the satellite considered
             - f1        : frequency considered
             - iono_type : ionosphere type (e.g. 'gvi' or 'rsi')
-            - isys      : index of gnss system to consider
-            - isat      : satellite index to consider for the gnss system isys
             - week      : GPS week
             - ephemeris : set of ephemeris from navigation data
             - md        : metadata
@@ -186,6 +184,17 @@ class IonoComputation:
                                      '[m-L1]', '\n'])
         # ------------------------Global or Regional STEC ---------------------
         elif ((iono_type == 'gsi') | (iono_type == 'rsi')):
+            # find the correct gnss and satellite indeces
+            sv_array = self.ssr.sv_array
+            isys = np.nan
+            sat_list = []
+            for isys, sat_list in enumerate(sv_array):
+                if sat_list[0][0] == prn[0]:
+                    break
+            isat = np.nan
+            for isat, sat in enumerate(sat_list):
+                if sat == prn:
+                    break
             # global or regional satellite-dependent ionosphere
             layer_hgt = ssr.layer_hgt
             if ssr.n_order > 0:
@@ -233,7 +242,22 @@ class IonoComputation:
             if len(self.ssr.grid_values) == 0.0:
                 vtec = np.nan
             else:
-                vtec = self.compute_gri(isys, isat)
+                # find the correct gnss and satellite indeces
+                sv_array = self.ssr.sv_array
+                isys = np.nan
+                sat_list = []
+                for isys, sat_list in enumerate(sv_array):
+                    if sat_list[0][0] == prn[0]:
+                        break
+                isat = np.nan
+                for isat, sat in enumerate(sat_list):
+                    if sat == prn:
+                        break
+                if np.isnan(isys) or np.isnan(isat):
+                    # no satellite
+                    vtec = np.nan
+                else:
+                    vtec = self.compute_gri(isys, isat)
             # the gridded ionosphere is defined at the station height.
             # As a consequence, the slant factor is 1/sin(el)
             sf = 1.0 / np.sin(el_ellips)
@@ -422,6 +446,9 @@ class IonoComputation:
         elif nc_max == 6:
             ii_list = np.array([0, 0, 1, 0, 1, 2])
             jj_list = np.array([0, 1, 0, 2, 1, 0])
+        else:
+            ii_list = []
+            jj_list = []
         vtec = 0
         # initialize chebyshev polynomials
         cp_dN = []

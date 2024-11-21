@@ -453,7 +453,7 @@ class Orbit:
         else:
             state_out = state
 
-        return state_out
+        return state_out, dt_sv
 
     def compute_glonass_orbit(
         self,

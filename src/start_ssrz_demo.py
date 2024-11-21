@@ -54,7 +54,7 @@ import os
 # =============================================================================
 window = tk.Tk()
 window.title('Geo++ SSRZ Python Demo v2.2')
-window.geometry('740x300')
+window.geometry('740x350')
 window.grid()
 # Setting it up
 full_path = os.path.realpath(__file__)
@@ -149,7 +149,7 @@ twelveth_row.grid(row=11, column=0, sticky='w')
 lbl_csv = tk.Label(
     twelveth_row, text="SSI as CSV (1 or 0, 1 defeult)   (optional)")
 lbl_csv.pack(side='left')
-txt_csv = tk.Entry(eleventh_row, width=20)
+txt_csv = tk.Entry(twelveth_row, width=20)
 txt_csv.pack(side='left')
 # =============================================================================
 # Read input class

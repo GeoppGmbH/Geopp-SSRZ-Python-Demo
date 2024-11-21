@@ -76,51 +76,56 @@ def check_print_ssi_after_msg(dec_msg, print_ssi_after_msg:list):
 # =============================================================================
 #                                  SSRZ demo
 # =============================================================================
-def ssrz_demo(ssrz_file, user_llh, nav_file=None, dec_only=None,
-              out_folder=None,
-              week_start=0, time_start=0, week_end=0, time_end=0,
-              do_not_use_msg=[], do_not_use_gnss=[],
-              print_ssi_after_msg=["GT"],
+def ssrz_demo(ssrz_file:str, user_llh:list, nav_file:str=None,
+              dec_only:int=None,
+              out_folder:str=None,
+              week_start:int=0, sow_start:float=0., week_end:int=0,
+              sow_end:float=0.,
+              do_not_use_msg:list=[""], do_not_use_gnss:list=[""],
+              print_ssi_after_msg:list=["GT"],
               csv_out=False, do_sed=True, zero_tide=False):
     """
     Decoding of SSRZ message and computing influence from SSR components on
     user position.
 
-    Input:
-    - ssrz_file   : complete path of the SSRZ binary file
-    - user_llh    : ellipsoidal coordinates of the user position,
-                    lat[deg], lon[deg], height [m] considering WGS84
-    - nav_file    : RINEX navigation file
-    - dec_only    : if 1, the demo works as decoder, i.e. the SSR influence on
-                    rover position is not performed, but the decoding of
-                    SSRZ messages
-    - out_folder  : desired folder for the output, if not provided, i.e.==None,
-                   the output folder will be 'path//SSRZ_demo//'
-    - gpsweek_start      :
-      sow_start          : set start time for OSR conversion. If both values
-                           are set to zero the first decoded epoch
-                           will be used
-    - gpsweek_end        :
-      sow_end            : set end time for OSR conversion.
-                           If both values are set to zero the OSR conversion
-                           runs until the last decoded epoch
-    - do_not_use_msg     : this list indicates which messages should be
+    :param ssrz_file: complete path of the SSRZ binary file
+    :param user_llh: ellipsoidal coordinates of the user position,
+                     lat[deg], lon[deg], height [m] considering WGS84
+    :param nav_file: RINEX navigation file
+    :param dec_only: if 1, the demo works as decoder,
+                     i.e., the SSR influence on
+                     rover position is not performed, but the decoding of
+                     SSRZ messages
+    :param out_folder: desired folder for the output, if not provided,
+                       i.e.==None, the output folder will be
+                       'path//SSRZ_demo//'
+    :param gpsweek_start: GPS week start
+    :param sow_start: Set start time for OSR conversion. If both week and
+                      sow values are set to zero the first decoded epoch
+                      will be used
+    :param gpsweek_end: GPS week end.
+    :param sow_end: Set end time for OSR conversion. If both week and sow
+                    values are set to zero the OSR conversion runs until
+                    the last decoded epoch
+    :param do_not_use_msg: This list indicates which messages should be
                            skipped from decoding (and OSR conversion).
                            Example: 'ZM007' or 'RT'
-    - do_not_use_gnss    : exclude GNSS ('G', 'R', 'E',...) from OSR conversion
-    - print_ssi_after_msg: set a message ('GVI', 'RT',...) after which the OSR
-                           conversion shall start. If this is not set, OSR
-                           conversion and SSI output will be performed after
-                           each received/decoded SSRZ message
-    - csv_out            : enables csv output with ssi after RT message
-                           (hard-coded)
-    - do_sed             : compute solid Earth tides by using Milbert's code
-    - zero_tide          : flag to consider zero tide system for
-                           solid Earth tides.
-                           Default is a "conventional tide free" system,
-                           in conformance with the IERS Conventions.
+    :param do_not_use_gnss: Exclude GNSS ('G', 'R', 'E',...)
+                            from OSR conversion
+    :param print_ssi_after_msg: Set a message ('GVI', 'RT',...)
+                                after which the OSR
+                                conversion shall start.
+                                If this is not set, OSR
+                                conversion and SSI output will be performed
+                                after each received/decoded SSRZ message
+    :param csv_out: it enables csv output with ssi after RT message
+                    (hard-coded)
+    :param do_sed: compute solid Earth tides by using Milbert's code
+    :param zero_tide: flag to consider zero tide system for solid Earth tides.
+                      Default is a "conventional tide free" system,
+                      in conformance with the IERS Conventions.
 
-    Output:
+    :return:
         - printed decoded ssrz messages
         - printed SSR influence for user location if required
         - printed global vtec ionosphere if required
@@ -322,10 +327,10 @@ def ssrz_demo(ssrz_file, user_llh, nav_file=None, dec_only=None,
                                     break
                                 if week_start > 0 and week_end > 0:
                                     dt_start = trafo.diff_time_s(week_start,
-                                                                 time_start,
+                                                                 sow_start,
                                                                  week, epoch)
                                     dt_end = trafo.diff_time_s(week_end,
-                                                               time_end,
+                                                               sow_end,
                                                                week, epoch)
                                     if dt_start < 0:
                                         p_ssi = False

@@ -119,8 +119,9 @@ class EphemerisList:
             ephemeris = self.bds[prn-1]
         elif gnss == 'J':
             ephemeris = self.qzs[prn-1]
-
-        if ephemeris is None:
+        else:
+            print("".join([gnss, " not supported."]))
+            ephemeris = None
             return None
 
         list_of_epochs = np.array(ephemeris.list_of_sat_epochs)
@@ -130,6 +131,8 @@ class EphemerisList:
             idx = np.where(np.abs(list_of_epochs - epoch) ==
                            np.min(np.abs(list_of_epochs - epoch)))[0][0]
         else:
+            if len(ephemeris.list_of_ephemeris) < 1:
+                return None
             if (gnss == "G") or (gnss == "E") or (gnss == "J"):
                 while ephemeris.list_of_ephemeris[idx].iode != iode:
                     idx += 1

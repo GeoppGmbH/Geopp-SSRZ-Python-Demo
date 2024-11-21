@@ -77,7 +77,7 @@ class PiercePointOrigin:
         sat_clock = 'corrected'
         sv_xyz = orbit_ppo.compute_state_vector(ephemeris, sat_clock)
         # apply spin correction
-        sat_spin = pp.compute_spin_corr(sv_xyz, self.gpo_xyz)
+        sat_spin = pp.compute_spin_corr(sv_xyz[0], self.gpo_xyz)
         # compute spherical coordinates
         [lat_sph,
          lon_sph,

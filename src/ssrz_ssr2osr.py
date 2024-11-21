@@ -109,6 +109,7 @@ class ssr2osr:
         # ****************************
         # components initialization
         self.orb = []
+        self.nav_clock = []
         self.clk = []
         self.clk_hr = []
         self.cbias = []
@@ -145,6 +146,7 @@ class ssr2osr:
                     self.sats.append([])
                     self.sats[ii] = lr_sv_array
                     # append gnss component
+                    self.nav_clock.append([])
                     self.orb.append([])
                     self.clk.append([])
                     self.clk_hr.append([])
@@ -200,6 +202,7 @@ class ssr2osr:
                     # ****************************
                     for jj, sat in enumerate(sat_list):
                         # append satellite component per gnss
+                        self.nav_clock[ii].append([])
                         self.orb[ii].append([])
                         self.clk[ii].append([])
                         self.clk_hr[ii].append([])
@@ -228,7 +231,7 @@ class ssr2osr:
                         ephemeris = nav_data.get_ephemeris(gnss, prn, iode,
                                                            epoch)
                         if ephemeris is None:
-                            print('WARNING: no ephemeris data for' + sat)
+                            print('WARNING: no ephemeris data for ' + sat)
                             if jj == len(sat_list) - 1:
                                 ii += 1  # increase system index
                             continue
@@ -248,18 +251,19 @@ class ssr2osr:
                         sat_clock = True
                         light_time = True
                         sagnac_eff = True
-                        sat_state = orbit_p.compute_state_vector(ephemeris,
-                                                                 sat_clock,
-                                                                 light_time,
-                                                                 sagnac_eff)
+                        sat_state, sat_nav_clk = orbit_p.compute_state_vector(
+                            ephemeris, sat_clock, light_time, sagnac_eff
+                        )
                         self.sat_state[ii][jj] = sat_state
+                        self.nav_clock[ii][jj] = sat_nav_clk
+                        nav_clock_out = self.make_output_format(sat_nav_clk)
                         # Compute geometric range [m]
                         rho = np.sqrt((sat_state[0] - self.rec[0]) ** 2 +
                                       (sat_state[1] - self.rec[1]) ** 2 +
                                       (sat_state[2] - self.rec[2]) ** 2)
                         # Save satellite coordinates at transmission time
                         # (no application of Sagnac effect)
-                        sat_state_no_sagnac = orbit_p.compute_state_vector(
+                        [sat_state_no_sagnac, nav_clock] = orbit_p.compute_state_vector(
                             ephemeris, sat_clock, light_time, False)
                         # frequency to be considered for correction
                         # computation as an example
@@ -303,6 +307,8 @@ class ssr2osr:
                                 signal = '1C'
                             elif gnss == 'C':
                                 signal = '2I'
+                            else:
+                                signal = ""
                             self.cbias[ii][jj] = CodeBias(lr_msg, kk, jj, gnss,
                                                           signal).corr
                             self.pbias[ii][jj] = PhaseBias(lr_msg, kk, jj,
@@ -353,11 +359,16 @@ class ssr2osr:
                             gvi_msg = ssr.gvi
                             # check time tag w.r.t. lr
                             if gvi_msg.time_tag_15 >= lr_msg.time_tag_15:
-                                glo_vtec = Ionosphere(gvi_msg, epoch, kk, jj,
-                                                      sat_state,
-                                                      receiver, gnss, sat,
-                                                      fr, iono_type,
-                                                      dbg_out=f_out_iono)
+                                glo_vtec = Ionosphere(
+                                    ssr=gvi_msg,
+                                    epoch=epoch,
+                                    state=sat_state,
+                                    rec=receiver,
+                                    gnss=gnss,
+                                    sat=sat,
+                                    fr=fr,
+                                    iono_type=iono_type,dbg_out=f_out_iono
+                                )
                                 self.gvi[ii][jj] = glo_vtec.corr
                                 iono_tot_tecu += glo_vtec.corr
                                 iono_tot_meters += glo_vtec.corr_f1
@@ -387,12 +398,19 @@ class ssr2osr:
                                 iono_type = 'rsi'
                                 # gnss is the RINEX Code of the system
                                 # sat is a string ('G12' or 'C02')
-                                reg_iono = Ionosphere(ssr=rsi_msg, epoch=epoch,
-                                                      week=week, ephemeris=ephemeris,
-                                                      isys=ii, isat=jj, state=sat_state,
-                                                      rec=receiver, gnss=gnss, sat=sat,
-                                                      fr=fr, iono_type=iono_type,
-                                                      rsi_ppo=self.rsi_ppo[ii][jj])
+                                reg_iono = Ionosphere(
+                                    ssr=rsi_msg,
+                                    epoch=epoch,
+                                    week=week,
+                                    ephemeris=ephemeris,
+                                    state=sat_state,
+                                    rec=receiver,
+                                    gnss=gnss,
+                                    sat=sat,
+                                    fr=fr,
+                                    iono_type=iono_type,
+                                    rsi_ppo=self.rsi_ppo[ii][jj]
+                                )
                                 self.rsi[ii][jj] = reg_iono.corr
                                 self.rsi_ppo[ii][jj] = reg_iono.rsi_ppo
 
@@ -421,12 +439,17 @@ class ssr2osr:
                                 # check the time tag w.r.t. low rate
                                 if gri_msg.time_tag_15 >= lr_msg.time_tag_15:
                                     iono_type = 'gri'
-                                    grid_iono = Ionosphere(gri_msg, epoch, kk, jj,
-                                                           sat_state,
-                                                           receiver, gnss, sat,
-                                                           fr, iono_type,
-                                                           md=md,
-                                                           el=self.el[ii][jj])
+                                    grid_iono = Ionosphere(
+                                        ssr=gri_msg,
+                                        epoch=epoch,
+                                        state=sat_state,
+                                        rec=receiver,
+                                        gnss=gnss,
+                                        sat=sat,
+                                        fr=fr,
+                                        iono_type=iono_type,
+                                        md=md,
+                                        el=self.el[ii][jj])
                                     self.gri[ii][jj] = grid_iono.corr
                                     iono_tot_tecu += grid_iono.corr
                                     iono_tot_meters += grid_iono.corr_f1
@@ -588,6 +611,7 @@ class ssr2osr:
                                                     '{:19.9f}'.format(
                                                         sat_state_no_sagnac[2]),
                                                     ',',
+                                                    nav_clock_out, ",",
                                                     clk_out, ',',
                                                     clk_hr_out, ',',
                                                     orb_out, ',',
@@ -628,6 +652,7 @@ class ssr2osr:
                                                      el_out, '  ',
                                                      az_out, '  ',
                                                      orb_out, '   ',
+                                                     nav_clock_out, '   ',
                                                      clk_tot_out, '    ',
                                                      clk_out, '  ',
                                                      clk_hr_out, '    ',
@@ -711,15 +736,16 @@ class ssr2osr:
     @classmethod
     def get_header_csv(cls):
         return ("".join(['# Week,time,SAT,signal,wavelength(m),azimuth(deg),',
-                'elevation(deg),range(m),X(m),Y(m),Z(m),LowRate clock (m),',
-                         'HighRate clock(m),orbit(m),CodeBias(m),PhaseBias(m),',
-                         'STEC total(m),STEC total(TECU),STEC GVI(TECU),',
-                         'STEC GSI(TECU),STEC RSI(TECU),STEC GRI(TECU),tropo(m),',
-                         'GT(m),RT(m),GRT(m),modelZTDdry(m),modelZTDwet(m),',
-                         'modelSTDdry(m),modelSTDwet(m),windup(cyc),relativity(m),',
-                         'solidEarthTide dN(m),solidEarthTide dE(m),',
-                         'solidEarthTide dU(m)',
-                         'mappingImprovement(m)']))
+                'elevation(deg),range(m),X(m),Y(m),Z(m), Nav clock (m),',
+                'LowRate clock (m),',
+                'HighRate clock(m),orbit(m),CodeBias(m),PhaseBias(m),',
+                'STEC total(m),STEC total(TECU),STEC GVI(TECU),',
+                'STEC GSI(TECU),STEC RSI(TECU),STEC GRI(TECU),tropo(m),',
+                'GT(m),RT(m),GRT(m),modelZTDdry(m),modelZTDwet(m),',
+                'modelSTDdry(m),modelSTDwet(m),windup(cyc),relativity(m),',
+                'solidEarthTide dN(m),solidEarthTide dE(m),',
+                'solidEarthTide dU(m)',
+                'mappingImprovement(m)']))
 
 
 # =============================================================================
@@ -854,18 +880,25 @@ class Ionosphere:
         ionospheric influences for a user position.
     """
 
-    def __init__(self, ssr, epoch, isys, isat, state, rec, gnss, sat, fr,
-                 iono_type, ppo=None, md=None, el=None, gsi_ppo=None,
+    def __init__(self, ssr, epoch, state, rec, gnss, sat, fr,
+                 iono_type, md=None, el=None, gsi_ppo=None,
                  rsi_ppo=None, dbg_out=None, week=None, ephemeris=None):
-        iono_influence = iono_computation.IonoComputation(ssr, epoch, isys,
-                                                          isat, state, rec,
-                                                          gnss, sat, fr,
-                                                          iono_type, md=md,
-                                                          el_ellips=el,
-                                                          gsi_ppo=gsi_ppo,
-                                                          rsi_ppo=rsi_ppo,
-                                                          week=week,
-                                                          ephemeris=ephemeris)
+        iono_influence = iono_computation.IonoComputation(
+            ssr=ssr,
+            epoch=epoch,
+            state=state,
+            rec=rec,
+            system=gnss,
+            prn=sat,
+            f1=fr,
+            iono_type=iono_type,
+            week=week,
+            ephemeris=ephemeris,
+            md=md,
+            el_ellips=el,
+            gsi_ppo=gsi_ppo,
+            rsi_ppo=rsi_ppo,
+            )
         # Select type of ionosphere
         # Global vtec
         if iono_type == 'gvi':
@@ -1073,7 +1106,7 @@ def get_closest_grid(corr_list:list, llh0:list):
                 enu = trafo.cart2enu(xyz, llh0=llh0)
                 distance_list.append(np.linalg.norm(enu))
         # Calculate minimum distance of the grid from the query point
-        distance = np.nanmean(np.array(distance_list))
+        distance = np.nanmin(np.array(distance_list))
         # Save this distance as the minimum distance for the current grid
         if distance < min_distance:
             min_distance = distance
