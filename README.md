@@ -1,6 +1,6 @@
 [![Language](https://img.shields.io/badge/python-3.9%2B-yellow.svg?style=flat-square)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-AGPLv3+-red.svg?style=flat-square)](https://github.com/GeoppGmbH/Geopp-SSRZ-Python-Demo/blob/master/LICENSE)
-[![Version](https://img.shields.io/badge/version-2.2-green.svg?style=flat-square)](https://github.com/GeoppGmbH/Geopp-SSRZ-Python-Demo/releases/tag/v2.2)
+[![Version](https://img.shields.io/badge/version-2.3-green.svg?style=flat-square)](https://github.com/GeoppGmbH/Geopp-SSRZ-Python-Demo/releases/tag/v2.3)
 [![Reference](https://img.shields.io/badge/reference-SSRZ-blue.svg?style=flat-square)](https://www.geopp.de/SSRZ/)
 
 ## Geo++ SSRZ Python Demonstrator
