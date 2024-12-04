@@ -1560,7 +1560,7 @@ class zdb050:
         n_coeff_triangle = compute_ncoeff_from_order_triangle(self.m_hor)
         self.n_coeff = (self.m_hgt + 1) * n_coeff_triangle
         # Compressed coefficients block definition of regional tropo component
-        self.blk = zdb023(msg, unpacked_bits, self.n_coeff)
+        self.blk = zdb023(msg, unpacked_bits, self.m_hor + 1)
         unpacked_bits = self.blk.unpacked_bits
         # Separated compressed coeff block per height
         if zdf107_bit0:

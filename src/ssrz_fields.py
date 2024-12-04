@@ -478,11 +478,11 @@ def zdf056(msg, unpacked_bits):
 
 def zdf057(msg, unpacked_bits):
     """ SSR update interval offset of an SSR update interval.
-        T_offset = ZDF057 + 1
+        T_offset = ZDF057
     """
     [pr_code, num, bits_zdf057] = prefix_coding(msg, 6, 0,
                                                 unpacked_bits=unpacked_bits)
-    t_offset = num + 1
+    t_offset = num
     return [t_offset, bits_zdf057]
 
 
