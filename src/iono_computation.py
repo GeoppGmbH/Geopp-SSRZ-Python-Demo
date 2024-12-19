@@ -189,6 +189,9 @@ class IonoComputation:
             isys = np.nan
             sat_list = []
             for isys, sat_list in enumerate(sv_array):
+                if len(sat_list) == 0:
+                    # skip empty satellite lists
+                    continue
                 if sat_list[0][0] == prn[0]:
                     break
             isat = np.nan
@@ -247,6 +250,9 @@ class IonoComputation:
                 isys = np.nan
                 sat_list = []
                 for isys, sat_list in enumerate(sv_array):
+                    if len(sat_list) == 0:
+                        # avoid empty lists
+                        continue
                     if sat_list[0][0] == prn[0]:
                         break
                 isat = np.nan
