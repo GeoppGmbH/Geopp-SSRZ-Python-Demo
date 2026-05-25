@@ -1343,7 +1343,82 @@ def zdf330(msg, unpacked_bits):
 
 def zdf331(msg, unpacked_bits):
     """ SSRZ Global VTEC bin size indicator
+
+    :param msg: message content
+    :param unpacked_bits: unpacked bits so far
     """
     [code, value, bits] = prefix_coding(msg, 3, 1, 0,
                                         unpacked_bits=unpacked_bits)
     return [value, bits]
+
+
+def zdf340(msg, unpacked_bits):
+    """
+    SSRZ Stream Identification Message Version.
+    Version of SSRZ Stream Identification Message
+    Version = ZDF340 + 1
+
+    :param msg: message content
+    :param unpacked_bits: unpacked bits so far
+    """
+    bits2unpack = unpacked_bits + "u3"
+    version = bitstruct.unpack(bits2unpack, msg)[-1] + 1
+    return [version, bits2unpack]
+
+
+def zdf341(msg, unpacked_bits):
+    """
+    Size of SSRZ Stream Identification Message Block in bytes.
+
+    :param msg: message content
+    :param unpacked_bits: unpacked bits so far
+    """
+    pc = prefix_coding(msg, 8, 0, unpacked_bits=unpacked_bits)
+    return [pc[1], pc[2]]
+
+
+def zdf342(msg, unpacked_bits):
+    """
+    SSRZ Stream Identfication Message Block Tag
+    This tag indicates if and what type of SSRZ
+    Stream Identification Message Block (ZM010-
+    X) will follow.
+    ZDF342 = 0: no data will follow
+    ZDF342 > 0: X = ZDF342
+
+    :param msg: message content
+    :param unpacked_bits: unpacked bits so far
+    """
+    pc = prefix_coding(msg, 8, 0, unpacked_bits=unpacked_bits)
+    return [pc[1], pc[2]]
+
+
+def zdf343(msg, unpacked_bits):
+    """
+    SSRZ Provider ID
+    Unique ID identifying an SSRZ service provider
+    Note:
+    0: Default Provider and assumed if ZM010 is
+    not part of the SSRZ stream.
+
+    :param msg: message content
+    :param unpacked_bits: unpacked bits so far
+    """
+    pc = prefix_coding(msg, 8, 0, unpacked_bits=unpacked_bits)
+    return [pc[1], pc[2]]
+
+
+def zdf344(msg, unpacked_bits):
+    """
+    SSRZ Stream ID
+    Unique ID identifying a SSRZ stream of a
+    SSRZ service provider.
+    Note:
+    0: Stream ID i assumed to be 0 if ZM010 is
+    not part of the SSRZ stream.
+
+    :param msg: message content
+    :param unpacked_bits: unpacked bits so far
+    """
+    pc = prefix_coding(msg, 8, 0, unpacked_bits=unpacked_bits)
+    return [pc[1], pc[2]]

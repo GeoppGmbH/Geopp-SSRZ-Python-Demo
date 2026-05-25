@@ -147,7 +147,7 @@ txt_sow_e.pack(side='left')
 twelveth_row = tk.Frame()
 twelveth_row.grid(row=11, column=0, sticky='w')
 lbl_csv = tk.Label(
-    twelveth_row, text="SSI as CSV (1 or 0, 1 defeult)   (optional)")
+    twelveth_row, text="SSI as CSV (1 or 0, 1 default)   (optional)")
 lbl_csv.pack(side='left')
 txt_csv = tk.Entry(twelveth_row, width=20)
 txt_csv.pack(side='left')

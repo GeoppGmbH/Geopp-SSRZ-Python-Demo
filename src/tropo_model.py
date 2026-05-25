@@ -38,15 +38,15 @@ _data_table = [
 [ 13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13,  13 ],
 [ 33,  34,  28,  23,  17,  13,   9,   4,   4,   1,  -2,  -2,   0,   2,   3,   2,   1,   1,   3,   1,  -2,  -3,  -3,  -3,  -1,   3,   1,   5,   9,  11,  19,  27,  31,  34,  33,  34 ],
 [ 51,  43,  29,  20,  12,   5,  -2, -10, -14, -12, -10, -14, -12,  -6,  -2,   3,   6,   4,   2,   2,   1,  -1,  -3,  -7, -14, -24, -27, -25, -19,   3,  24,  37,  47,  60,  61,  58 ],
-[ 47,  41,  21,  18,  14,   7,  -3, -22, -29, -32, -32, -26, -15,  -2,  13,  17,  19,   6,   2,   9,  17,  10,  13,   1, -14, -30, -39,  46, -42, -21,   6,  29,  49,  65,  60,  57 ],
+[ 47,  41,  21,  18,  14,   7,  -3, -22, -29, -32, -32, -26, -15,  -2,  13,  17,  19,   6,   2,   9,  17,  10,  13,   1, -14, -30, -39, -46, -42, -21,   6,  29,  49,  65,  60,  57 ],
 [ 47,  48,  42,  28,  12, -10, -19, -33, -43, -42, -43, -29,  -2,  17,  23,  22,   6,   2,  -8,   8,   8,   1, -11, -19, -16, -18, -22, -35, -40, -26, -12,  24,  45,  63,  62,  59 ],
 [ 52,  48,  35,  40,  33,  -9, -28, -39, -48, -59, -50, -28,   3,  23,  37,  18,  -1, -11, -12, -10, -13, -20, -31, -34, -21, -16, -26, -34, -33, -35, -26,   2,  33,  59,  52,  51 ],
 [ 36,  28,  29,  17,  12, -20, -15, -40, -33, -34, -34, -28,   7,  29,  43,  20,   4,  -6,  -7,  -5,  -8, -15, -28, -40, -42, -29, -22, -26, -32, -51, -40, -17,  17,  31,  34,  44 ],
 [ 31,  26,  15,   6,   1, -29, -44, -61, -67, -59, -36, -11,  21,  39,  49,  39,  22,  10,   5,  10,   7,  -7, -23, -39, -47, -34,  -9, -10, -20, -45, -48, -32,  -9,  17,  25,  31 ],
 [ 22,  23,   2,  -3,  -7, -36, -59, -90, -95, -63, -24,  12,  53,  60,  58,  46,  36,  26,  13,  12,  11,   2, -11, -28, -38, -29, -10,   3,   1, -11, -41, -42, -16,   3,  17,  33 ],
-[ 18,  12, -13,  -9, -28, -49, -62, -89 -102, -63,  -9,  33,  58,  73,  74,  63,  50,  32,  22,  16,  17,  13,   1, -12, -23, -20, -14,  -3,  14,  10, -15, -27, -18,   3,  12,  20 ],
+[ 18,  12, -13,  -9, -28, -49, -62, -89, -102, -63,  -9,  33,  58,  73,  74,  63,  50,  32,  22,  16,  17,  13,   1, -12, -23, -20, -14,  -3,  14,  10, -15, -27, -18,   3,  12,  20 ],
 [ 12,  13,  -2, -14, -25, -32, -38, -60, -75,  63, -26,   0,  35,  52,  68,  76,  64,  52,  36,  22,  11,   6,  -1,  -8, -10,  -8, -11,  -9,   1,  32,   4, -18, -13,  -9,   4,  14 ],
-[ 17,  23,  21,   8,  -9, -10, -11, -20, -40, -47, -45, -25,   5,  23,  45,  58,  57,  63,  51,  27,  10,   0,  -9, -11,  -5,  -2,  -3,  -1,   9,  35,  20,  -5,  -6,  -5,   0,  13 ],
+[ 17,  23,  21,   8,  -9, -10, -11,  20, -40, -47, -45, -25,   5,  23,  45,  58,  57,  63,  51,  27,  10,   0,  -9, -11,  -5,  -2,  -3,  -1,   9,  35,  20,  -5,  -6,  -5,   0,  13 ],
 [ 22,  27,  34,  29,  14,  15,  15,   7,  -9, -25, -37, -39, -23, -14,  15,  33,  34,  45,  46,  22,   5,  -2,  -8, -13, -10,  -7,  -4,   1,   9,  32,  16,   4,  -8,   4,  12,  15 ],
 [ 18,  26,  31,  33,  39,  41,  30,  24,  13,  -2, -20, -32, -33, -27, -14,  -2,   5,  20,  21,   6,   1,  -7, -12, -12, -12, -10,  -7,   1,   8,  23,  15,  -2,  -6,   6,  21,  24 ],
 [ 25,  26,  34,  39,  45,  45,  38,  39,  28,  13,  -1, -15, -22, -22, -18, -15, -14, -10, -15, -18, -18, -16, -17, -15, -10, -10,  -8,  -2,   6,  14,  13,   3,   3,  10,  20,  27 ],
@@ -59,22 +59,21 @@ _data_table = [
 
 
 def compute_geoid_hgt(lat, long):
-    """ Interpolation of WGS 84 Geoid Heights
-    Input:
-        - lat  : latitude of the desidered point
-        - long : longitude of the desidered point
-    Output:
-        - N    : geoid height at the desidered point using a bilinear
-                 interpolation
+    """Interpolation of WGS 84 Geoid Heights.
 
-    Bilinear interpolation uses a grid table of known values of the
-    geoid height. The grid considers a stepsize of 10° both in latitude and
-    longitude.  Latitude is considered in [-90, 90] (be aware that the order
-    is reverse: from -90 to 90!) and the longitude in [0, 350].
+    Bilinear interpolation uses a grid table of known values of the geoid
+    height. The grid considers a stepsize of 10 degrees both in latitude and
+    longitude. Latitude is considered in [-90, 90], and longitude is
+    normalized to [0, 360).
 
-    Reference:
-    DEPARTMENT OF DEFENSE WORLD GEODETIC SYSTEM,1984
-    ITS DEFINITION AND RELATIONSHIPS WITHLOCAL GEODETIC SYSTEMS
+    :param lat: latitude of the desired point [deg]
+    :param long: longitude of the desired point [deg]
+
+    :returns: geoid height at the desired point [m]
+
+    :reference:
+        Department of Defense World Geodetic System 1984, Its Definition and
+        Relationships with Local Geodetic Systems, DMA TR 8350.2.
 
     Example:
     >>> '%.8f' % compute_geoid_hgt(17.98, 34.1234)
@@ -82,72 +81,43 @@ def compute_geoid_hgt(lat, long):
     >>> '%.8f' % compute_geoid_hgt(87.38, 340.766)
     '18.26006920'
     """
+    geoid_heights = np.asarray(_data_table, dtype=float)
 
-    # Import the known geoid heights
-    N_ref = _data_table
-    # Define the vectors of latitude and longitude of the grid of known
-    # geoid heights
-    phi = np.linspace(90, -90, 19)  # latitude
-    lam = np.linspace(0, 350, 36)   # longitude
-    # Find the closest interval for lat
-    index = (np.abs(phi-lat)).argmin()
-    if lat > 0:
-        if phi[index] > lat:
-            i_lat_1 = index + 1
-            i_lat_2 = index
-            lat_1 = phi[index + 1]
-            lat_2 = phi[index]
-        else:
-            i_lat_1 = index
-            i_lat_2 = index - 1
-            lat_1 = phi[index]
-            lat_2 = phi[index - 1]
+    # The table is stored from +90 deg to -90 deg. Reversing the latitude
+    # axis makes the interpolation indices monotonic and avoids pole-specific
+    # index errors.
+    geoid_heights = geoid_heights[::-1, :]
+
+    lat_query = float(np.clip(lat, -90.0, 90.0))
+    lon_query = float(long) % 360.0
+
+    lat_position = (lat_query + 90.0) / 10.0
+    i_lat_1 = int(np.floor(lat_position))
+    lat_weight = lat_position - i_lat_1
+
+    if i_lat_1 >= geoid_heights.shape[0] - 1:
+        i_lat_1 = geoid_heights.shape[0] - 1
+        i_lat_2 = i_lat_1
+        lat_weight = 0.0
     else:
-        if phi[index] > lat:
-            i_lat_1 = index
-            i_lat_2 = index + 1
-            lat_1 = phi[index]
-            lat_2 = phi[index + 1]
-        else:
-            i_lat_1 = index - 1
-            i_lat_2 = index
-            lat_1 = phi[index - 1]
-            lat_2 = phi[index]
-    # Find the closest interval for long
-    # shift long to range 0:360 if necessary
-    while long < 0:
-        long += 360
-    while long >= 360:
-        long -= 360
-    jndex = (np.abs(lam - long)).argmin()
-    if lam[jndex] > long:
-        j_lon_1 = jndex - 1
-        j_lon_2 = jndex
-        lon_1 = lam[jndex - 1]
-        lon_2 = lam[jndex]
-    else:
-        j_lon_1 = jndex
-        if j_lon_1 == 35:
-            j_lon_2 = 0
-        else:
-            j_lon_2 = jndex + 1
-        lon_1 = lam[j_lon_1]
-        lon_2 = lam[j_lon_2]
+        i_lat_2 = i_lat_1 + 1
 
-    # Rectangle which contains the desidered value
-    N1 = N_ref[i_lat_1][j_lon_1]
-    N2 = N_ref[i_lat_1][j_lon_2]
-    N3 = N_ref[i_lat_2][j_lon_2]
-    N4 = N_ref[i_lat_2][j_lon_1]
+    lon_position = lon_query / 10.0
+    j_lon_1 = int(np.floor(lon_position)) % geoid_heights.shape[1]
+    j_lon_2 = (j_lon_1 + 1) % geoid_heights.shape[1]
+    lon_weight = lon_position - np.floor(lon_position)
 
-    N_known = [N1, N2, N3, N4]
-    x1 = [lat_1, lat_2]
-    x2 = [lon_1, lon_2]
+    n_11 = geoid_heights[i_lat_1, j_lon_1]
+    n_12 = geoid_heights[i_lat_1, j_lon_2]
+    n_21 = geoid_heights[i_lat_2, j_lon_1]
+    n_22 = geoid_heights[i_lat_2, j_lon_2]
 
-    # Interpolation
-    N = interp.do_bil_int(N_known, x1, x2, lat, long)
+    geoid_lat_1 = (1.0 - lon_weight) * n_11 + lon_weight * n_12
+    geoid_lat_2 = (1.0 - lon_weight) * n_21 + lon_weight * n_22
+    geoid_height = ((1.0 - lat_weight) * geoid_lat_1 +
+                    lat_weight * geoid_lat_2)
 
-    return N
+    return float(geoid_height)
 
 
 def get_unb3_weather(latitude, doy):
@@ -493,6 +463,10 @@ def compute_gmf(doy, dlat, dlon, dhgt, zd):
               +1.885e-07, +5.792e-07, +3.990e-08, +2.000e-08, -5.700e-09]
     # Define pi
     pi = 3.14159265359
+    # Reference day is 28 January.
+    # This is taken from Niell (1996) to be consistent with GMF.
+    doy_gmf = float(doy) - 28.0
+    gmf_seasonal_phase = doy_gmf / 365.25 * 2.0 * pi
     # degree n and order m
     nmax = 9
     # unit vector
@@ -533,7 +507,7 @@ def compute_gmf(doy, dlat, dlon, dhgt, zd):
         phh = 0
         c11h = 0.005
         c10h = 0.001
-    ch = c0h + ((np.cos(doy / 365.25 * 2.0 * pi + phh) + 1) *
+    ch = c0h + ((np.cos(gmf_seasonal_phase + phh) + 1) *
                 c11h / 2.0 + c10h) * (1.0 - np.cos(dlat))
 
     ahm = 0
@@ -544,7 +518,7 @@ def compute_gmf(doy, dlat, dlon, dhgt, zd):
             ahm = ahm + (ah_mean[i] * V[n, m] + bh_mean[i] * W[n, m])
             aha = aha + (ah_amp[i] * V[n, m] + bh_amp[i] * W[n, m])
             i += 1
-    ah = (ahm + aha * np.cos(doy / 365.25 * 2.0 * np.pi)) * 1e-5
+    ah = (ahm + aha * np.cos(gmf_seasonal_phase)) * 1e-5
 
     sine = np.sin(pi / 2.0 - zd)
     beta = bh / (sine + ch)
@@ -577,7 +551,7 @@ def compute_gmf(doy, dlat, dlon, dhgt, zd):
             awm = awm + (aw_mean[i] * V[n, m] + bw_mean[i] * W[n, m])
             awa = awa + (aw_amp[i] * V[n, m] + bw_amp[i] * W[n, m])
             i += 1
-    aw = (awm + awa * np.cos(doy / 365.25 * 2.0 * np.pi)) * 1e-5
+    aw = (awm + awa * np.cos(gmf_seasonal_phase)) * 1e-5
     beta = bw / (sine + cw)
     gamma = aw / (sine + beta)
     topcon = (1.0 + aw / (1.0 + bw / (1.0 + cw)))

@@ -230,6 +230,9 @@ class SSRZDecoder:
             self.dec_msg = TimeTag(msg_content, unpacked_bits)
             # update the corrections for the tropo correction message
             self.corrections.update(tt=self.dec_msg)
+        elif (zdf002 == 9):
+            self.ssrz_msg_type = "ZM010"
+
         elif zdf002 == 10:
             self.ssrz_msg_type = 'ZM011'
             self.dec_msg = MetaSatGroup(msg_content, unpacked_bits,
@@ -479,9 +482,58 @@ class SSRZDecoder:
 # =============================================================================
 # *************************************************************************** #
 #                                                                             #
+#                    SSRZ Stream Identification Message (ZM010)               #
+#                                                                             #
+# *************************************************************************** #
+class StreamId:
+    """
+    SSRZ Stream Identification message.
+
+    :param msg: message content
+    :param unpacked_bits: unpacked bits so far
+    """
+
+    def __init__(self, msg, unpacked_bits):
+        # stream ID message version
+        [self.version, unpacked_bits] = fields.zdf340(msg, unpacked_bits)
+        # Provider ID
+        [self.provider_id, unpacked_bits] = fields.zdf343(msg, unpacked_bits)
+        # Stream ID
+        [self.stream_id, unpacked_bits] = fields.zdf344(msg, unpacked_bits)
+        # SSRZ Stream Identificaiton Message Block Tag
+        [block_tag, unpacked_bits] = fields.zdf342(msg, unpacked_bits)
+        self.block_tag_list = [block_tag]
+        self.block_size_list = []
+        while block_tag > 0:
+            # SSRZ Stream Identification message block
+            # SSRZ Stream Identification Message Block Size
+            [block_size, unpacked_bits] = fields.zdf341(msg, unpacked_bits)
+            self.block_size_list.append(block_size)
+            # SSRZ Stream Identificaiton Message Block Tag
+            [block_tag, unpacked_bits] = fields.zdf342(msg, unpacked_bits)
+            self.block_tag_list.append(block_tag)
+
+    def __str__(self):
+        strg = ('Stream Identification Message' + '\n' +
+                'Version: ' + str(self.version) + '\n' +
+                'Provider ID: ' + str(self.provider_id) + '\n' +
+                'Stream ID: ' + str(self.stream_id) + '\n')
+        for ii, block_tag in enumerate(self.block_tag_list):
+            strg += ('Block tag: ' + str(block_tag) + '\n' +
+                     'Block size: ' + str(self.block_size_list[ii]) + '\n')
+        return strg
+
+    def __repr__(self):
+        strg = ('Metadata satellite group class with objects: md_tag and ' +
+                'sat_md_blk')
+        return strg
+# *************************************************************************** #
+#                                                                             #
 #                  SSRZ Satellite Group Definition Message (ZM011)            #
 #                                                                             #
 # *************************************************************************** #
+
+
 class MetaSatGroup:
     def __init__(self, msg, unpacked_bits, md):
         # ssrz metadata tag zdf020

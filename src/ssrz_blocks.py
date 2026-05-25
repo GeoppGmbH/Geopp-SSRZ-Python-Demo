@@ -735,6 +735,7 @@ class zdb010:
             for ii in range(self.n_pts - 2):
                 [b_flag, unpacked_bits] = fields.zdf097(msg, unpacked_bits)
                 b_flag_list.append(b_flag)
+            self.use_baseline_flag = b_flag_list
             # point position flag zdf098
             p_flag_list = []
             for ii in range(self.n_pts - 2):
@@ -755,6 +756,12 @@ class zdb010:
                             p_flag_list, l_flag_list, r_flag_list, res)
             self.lat = grid.lat
             self.lon = grid.lon
+            # additional debug
+            self.ss = ss
+            self.ds = ds
+            self.p_flag_list = p_flag_list
+            self.l_flag_list = l_flag_list
+            self.r_flag_list = r_flag_list
             # print(self.__str__)
         else:  # n_pts<=1
             self.lat = np.array([lat0])
@@ -817,6 +824,25 @@ class zdb010:
             lon = '   {:>8.7f}'.format(self.lon[ii])
             hgt = '   {:>7.3f}'.format(self.hgt[ii])
             strg += '    {:>4}'.format(ii) + '  ' + lat + lon + hgt + '\n'
+        # ----------------------- Additional debug ---------------------------
+        # ds
+        strg += "ds values: "
+        strg += "".join([f'{ds:<+11.10f}' + ", " for ds in self.ds]) + "\n"
+        # ss
+        strg += "ss values: "
+        strg += "".join([f'{ss:<+11.10f}' + ", " for ss in self.ss]) + "\n"
+        # Points
+        strg += "P flag values: "
+        strg += "".join([f'{p:>1d}' + ", " for p in self.p_flag_list]) + "\n"
+        # Left flag
+        strg += "Left flag values: "
+        strg += "".join([f'{lf:>1d}' + ", " for lf in self.l_flag_list]) + "\n"
+        # Right flag
+        strg += "Right flag values: "
+        strg += "".join([f'{rf:>1d}' + ", " for rf in self.r_flag_list]) + "\n"
+        # Use baseline flag
+        strg += "Use baseline flag values: "
+        strg += "".join([f'{uf:>1d}' + ", " for uf in self.use_baseline_flag]) + "\n"
         return strg
 
     def __repr__(self):

@@ -35,7 +35,6 @@
     sophisticated methods depending on the application.
 """
 
-from ast import Try
 import numpy as np
 import tropo_model
 import space_time_trafo as trafo
@@ -80,7 +79,6 @@ class TropoComputation:
             self.tropo = self.compute_mapping_improvement(el)
             return
         # compute the UNB3 model with 2 components: dry[0] and wet[1]
-        doy = int(doy)
         model = tropo_model.get_model_troposphere(rec_llh, doy, f_dbg)
         self.model_dry_zenith = model[0]
         self.model_wet_zenith = model[1]
