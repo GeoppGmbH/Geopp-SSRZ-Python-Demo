@@ -94,7 +94,7 @@ class ssr2osr:
         epoch_gps.sow = epoch
         epoch_gc = trafo.gps2gc_format(epoch_gps)
         # compute doy with fractional part
-        doy = doy + ((hh * 3600.0 + mm * 60.0 + ss) / 84600.0)
+        doy = doy + ((hh * 3600.0 + mm * 60.0 + ss) / 86400.0)
         self.week = week
         # satellites
         self.sats = []
