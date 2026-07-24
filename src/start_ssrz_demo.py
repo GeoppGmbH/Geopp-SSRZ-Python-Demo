@@ -53,7 +53,7 @@ import os
 # Title & Logo
 # =============================================================================
 window = tk.Tk()
-window.title('Geo++ SSRZ Python Demo v2.2.1')
+window.title('Geo++ SSRZ Python Demo v2.4')
 window.geometry('740x350')
 window.grid()
 # Setting it up
