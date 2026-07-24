@@ -148,7 +148,7 @@ def ssrz_demo(ssrz_file:str, user_llh:list, nav_file:str=None,
             raise
     header = "".join(['#------------------------------------------------------------',
                       '---', '\n',
-                      '# Geo++ SSRZ Python Demonstrator v2.2 ', '\n',
+                      '# Geo++ SSRZ Python Demonstrator v2.2.1 ', '\n',
                       '# Copyright (C) 2020 Francesco Darugna <fd@geopp.de>  ',
                       'Geo++ GmbH', '\n',
                       '#                    Jannes B. Wübbena <jw@geopp.de>  ',

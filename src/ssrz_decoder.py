@@ -230,8 +230,9 @@ class SSRZDecoder:
             self.dec_msg = TimeTag(msg_content, unpacked_bits)
             # update the corrections for the tropo correction message
             self.corrections.update(tt=self.dec_msg)
-        elif (zdf002 == 9):
-            self.ssrz_msg_type = "ZM010"
+        elif zdf002 == 9:
+            self.ssrz_msg_type = 'ZM010'
+            self.dec_msg = StreamId(msg_content, unpacked_bits)
 
         elif zdf002 == 10:
             self.ssrz_msg_type = 'ZM011'
@@ -248,6 +249,9 @@ class SSRZDecoder:
             self.ssrz_msg_type = 'ZM013'
             self.dec_msg = MetaGrid(msg_content, unpacked_bits, self.metadata)
             self.metadata.update(grid_gr=self.dec_msg)
+        elif zdf002 == 23:
+            self.ssrz_msg_type = 'ZM024'
+            self.dec_msg = LeapSecond(msg_content, unpacked_bits)
         else:
             self.dec_msg = None
             self.ssrz_msg_type = None
@@ -376,6 +380,18 @@ class SSRZDecoder:
             strg += self.dec_msg.__str__()
         # ******************************************************************* #
         #                                                                     #
+        #               SSRZ Stream Identification Message (ZM010)            #
+        #                                                                     #
+        # ******************************************************************* #
+        elif self.ssrz_msg_type == 'ZM010':
+            strg = ('### SSRZ - ' + str(self.msg_type) + '.' +
+                    str(self.msg_subtype) + '.' +
+                    str(int(self.ssrz_msg_type[-3:])) +
+                    ' Stream Identification Message ' +
+                    '<' + str(self.ssrz_msg_type) + '>' + '\n')
+            strg += self.dec_msg.__str__()
+        # ******************************************************************* #
+        #                                                                     #
         #               SSRZ Satellite Group Definition Message (ZM011)       #
         #                                                                     #
         # ******************************************************************* #
@@ -472,6 +488,18 @@ class SSRZDecoder:
                     ' SSRZ Metadata Message ' +
                     '<' + str(self.ssrz_msg_type) + '>' + '\n')
             strg += self.dec_msg.grid_block.__str__()
+        # ******************************************************************* #
+        #                                                                     #
+        #                    SSRZ Leap Second Message (ZM024)                  #
+        #                                                                     #
+        # ******************************************************************* #
+        elif self.ssrz_msg_type == 'ZM024':
+            strg = ('### SSRZ - ' + str(self.msg_type) + '.' +
+                    str(self.msg_subtype) + '.' +
+                    str(int(self.ssrz_msg_type[-3:])) +
+                    ' Leap Second Message ' +
+                    '<' + str(self.ssrz_msg_type) + '>' + '\n')
+            strg += self.dec_msg.__str__()
         else:
             strg = ''
         return strg
@@ -500,18 +528,21 @@ class StreamId:
         [self.provider_id, unpacked_bits] = fields.zdf343(msg, unpacked_bits)
         # Stream ID
         [self.stream_id, unpacked_bits] = fields.zdf344(msg, unpacked_bits)
-        # SSRZ Stream Identificaiton Message Block Tag
+        # SSRZ Stream Identification Message Block Tag
         [block_tag, unpacked_bits] = fields.zdf342(msg, unpacked_bits)
-        self.block_tag_list = [block_tag]
+        self.block_tag_list = []
         self.block_size_list = []
         while block_tag > 0:
-            # SSRZ Stream Identification message block
-            # SSRZ Stream Identification Message Block Size
+            # ZM010-X is a future extension. Its size is in bytes and allows
+            # an older decoder to skip the complete unsupported block.
             [block_size, unpacked_bits] = fields.zdf341(msg, unpacked_bits)
-            self.block_size_list.append(block_size)
-            # SSRZ Stream Identificaiton Message Block Tag
-            [block_tag, unpacked_bits] = fields.zdf342(msg, unpacked_bits)
             self.block_tag_list.append(block_tag)
+            self.block_size_list.append(block_size)
+            if block_size > 0:
+                bits2unpack = unpacked_bits + 'u%d' % (block_size * 8)
+                bitstruct.unpack(bits2unpack, msg)
+                unpacked_bits = bits2unpack
+            [block_tag, unpacked_bits] = fields.zdf342(msg, unpacked_bits)
 
     def __str__(self):
         strg = ('Stream Identification Message' + '\n' +
@@ -524,9 +555,57 @@ class StreamId:
         return strg
 
     def __repr__(self):
-        strg = ('Metadata satellite group class with objects: md_tag and ' +
-                'sat_md_blk')
+        return ('SSRZ stream identification with version, provider ID, ' +
+                'stream ID and skipped extension-block descriptors')
+# *************************************************************************** #
+#                                                                             #
+#                       SSRZ Leap Second Message (ZM024)                       #
+#                                                                             #
+# *************************************************************************** #
+class LeapSecond:
+    """Decode the SSRZ leap-second message defined by ZM024."""
+
+    def __init__(self, msg, unpacked_bits):
+        [self.md_tag, unpacked_bits] = fields.zdf020(msg, unpacked_bits)
+        self.year = None
+        self.month = None
+        self.current_leap_seconds = None
+        self.delta_leap_seconds = None
+        self.clear_stored_leap_second = False
+        if self.md_tag != 1:
+            return
+        [self.year, unpacked_bits] = fields.zdf250(msg, unpacked_bits)
+        [self.month, unpacked_bits] = fields.zdf251(msg, unpacked_bits)
+        [self.current_leap_seconds, unpacked_bits] = fields.zdf252(
+            msg, unpacked_bits)
+        [delta, unpacked_bits] = fields.zdf254(msg, unpacked_bits)
+        self.clear_stored_leap_second = (
+            delta == 0 and np.signbit(delta))
+        self.delta_leap_seconds = None if (
+            self.clear_stored_leap_second) else int(delta)
+
+    def __str__(self):
+        strg = 'Leap Second Message\n'
+        strg += 'Metadata tag: ' + str(self.md_tag) + '\n'
+        if self.md_tag != 1:
+            strg += 'Leap-second data not available\n'
+            return strg
+        strg += 'Application year: ' + str(self.year) + '\n'
+        strg += 'Application month: ' + str(self.month) + '\n'
+        strg += ('Current leap seconds: ' +
+                 str(self.current_leap_seconds) + ' s\n')
+        if self.clear_stored_leap_second:
+            strg += 'Announced change: clear stored leap second\n'
+        else:
+            strg += ('Announced leap-second change: ' +
+                     str(self.delta_leap_seconds) + ' s\n')
         return strg
+
+    def __repr__(self):
+        return ('SSRZ leap-second message with application date, current ' +
+                'leap seconds and announced change')
+
+
 # *************************************************************************** #
 #                                                                             #
 #                  SSRZ Satellite Group Definition Message (ZM011)            #
@@ -646,34 +725,42 @@ class CorrHr:
         # low rate msg has to be checked for the correct timing block
         # and satellite group.
 
-        # find the corresponding sat group in the correct timing block
-        lr_t_blk_idx = []
-        lr_sat_group_idx = []
-        for ii in range(len(corr.lr)):
-            for jj in range(len(corr.lr[ii])):
-                lr_sv_gr_bit_mask = corr.lr[ii][jj].sv_gr_bit_mask
-                if lr_sv_gr_bit_mask[jj] == 1:
-                    gnss_lr = md.sat_gr.sat_md_blk.lr_block[jj].gnss
-                    if ((gnss_lr in self.gnss_hr_md) &
-                        (self.time_tag_15 - corr.lr[ii][jj].time_tag_15 <
-                         md.md_gr.md_block.lr_md_block.lr_timing_block[ii].ssrz_timing_block.ui)):
-                        lr_t_blk_idx.append(ii)
-                        lr_sat_group_idx.append(jj)
-        lr_t_blk_idx = np.unique(lr_t_blk_idx)
-        if len(lr_t_blk_idx) == 0:
-            # if there is no common sat group return and set the flag saying
-            # that it was not possible to decode the hr message
+        # Find a previously transmitted and still valid LR message.
+        # ZDF050 is a 15-minute time tag, therefore age computation must be
+        # wrap-safe. ZDF056 defines the nominal validity interval.
+        valid_lr = None
+        for timing_index, timing_groups in enumerate(corr.lr):
+            if timing_groups is None:
+                continue
+            update_interval = (
+                md.md_gr.md_block.lr_md_block
+                .lr_timing_block[timing_index]
+                .ssrz_timing_block.ui)
+            for lr_corr in timing_groups:
+                if not hasattr(lr_corr, 'sv_gr_bit_mask'):
+                    continue
+                selected_groups = np.where(
+                    np.asarray(lr_corr.sv_gr_bit_mask) == 1)[0]
+                if len(selected_groups) == 0:
+                    continue
+                lr_group_index = int(selected_groups[0])
+                gnss_lr = md.sat_gr.sat_md_blk.lr_block[
+                    lr_group_index].gnss
+                age = ((self.time_tag_15 - lr_corr.time_tag_15) %
+                       (15 * 60))
+                if ((gnss_lr in self.gnss_hr_md) and
+                        (0 <= age < update_interval)):
+                    valid_lr = lr_corr
+                    break
+            if valid_lr is not None:
+                break
+
+        if valid_lr is None:
             self.no_lr = 1
             return
-        else:
-            self.no_lr = 0
-        # at this point it is possible to assume that the hr corr can be
-        # decoded for the same satellites of the lr corr
-        self.sv_array = []
-        for ii in range(len(lr_t_blk_idx)):
-            for jj in range(len(lr_sat_group_idx)):
-                self.sv_array.append([])
-                self.sv_array = corr.lr[ii][jj].sv_array
+
+        self.no_lr = 0
+        self.sv_array = valid_lr.sv_array
         # ssrz high rate clock corrections
         # read related metadata
         # number of rice blocks

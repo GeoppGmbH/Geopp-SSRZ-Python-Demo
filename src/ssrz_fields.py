@@ -51,7 +51,8 @@ def prefix_coding(msg, n0, db, n_max=0, unpacked_bits=None):
             - msg to decode
             - n0 number of bits of the first block
             - db delta bit of increasing bits for the next block
-            - n_max of bits that can be considering in the additive block
+            - n_max maximum width of an additional block. A value of zero
+              denotes no finite maximum, as used by PC(N0, db, 0).
         Output
     """
     if unpacked_bits is None:
@@ -103,6 +104,21 @@ def prefix_coding(msg, n0, db, n_max=0, unpacked_bits=None):
         int_val += int(test2check[-delta:], 2)
 
     return [test2check, int_val, bits2unpack]
+
+
+def signed_magnitude(msg, n_bits, unpacked_bits):
+    """Decode an SSRZ ``sint`` signed-magnitude value.
+
+    Negative zero is preserved as ``-0.0`` so callers can distinguish the
+    ZDF254 clear indication from a normal zero change.
+    """
+    bits2unpack = unpacked_bits + 'u1' + 'u%d' % (n_bits - 1)
+    sign, magnitude = bitstruct.unpack(bits2unpack, msg)[-2:]
+    if sign == 0:
+        return [magnitude, bits2unpack]
+    if magnitude == 0:
+        return [-0.0, bits2unpack]
+    return [-magnitude, bits2unpack]
 
 
 # =============================================================================
@@ -263,7 +279,7 @@ def zdf019(msg, unpacked_bits, gnss):
     r3code['G'] = ['1C', '1P', '1W', '', '', '2C', '2D', '2S', '2L', '2X',
                    '2P', '2W', '', '', '5I', '5Q', '5X', '1S', '1L', '1X', '',
                    '', '', '', '', '', '', '', '', '', '']
-    r3code['R'] = ['1C', '1P', '2C', '2P', '4A', '4B', '4X', '6A', '6B', '6X',
+    r3code['R'] = ['1C', '1P', '2P', '2C', '4A', '4B', '4X', '6A', '6B', '6X',
                    '3I', '3Q', '3X', '', '', '', '', '', '', '', '',
                    '', '', '', '', '', '', '', '', '', '']
     r3code['E'] = ['1A', '1B', '1C', '1X', '1Z', '5I', '5Q', '5X', '7I', '7Q',
@@ -1218,6 +1234,37 @@ def zdf234(msg, unpacked_bits):
     bits2unpack = unpacked_bits + 'u17'
     time_tag = bitstruct.unpack(bits2unpack, msg)[-1] * 1  # [s]
     return [time_tag, unpacked_bits]
+
+
+def zdf250(msg, unpacked_bits):
+    """SSRZ leap-second application year.
+
+    The decoded year is ``2023 + ZDF250``.
+    """
+    [code, value, bits] = prefix_coding(
+        msg, 5, 0, unpacked_bits=unpacked_bits)
+    return [2023 + value, bits]
+
+
+def zdf251(msg, unpacked_bits):
+    """SSRZ leap-second application month."""
+    bits2unpack = unpacked_bits + 'u4'
+    month = bitstruct.unpack(bits2unpack, msg)[-1] + 1
+    return [month, bits2unpack]
+
+
+def zdf252(msg, unpacked_bits):
+    """Current leap seconds, encoded relative to 18 seconds."""
+    [offset, bits] = signed_magnitude(msg, 4, unpacked_bits)
+    return [18 + offset, bits]
+
+
+def zdf254(msg, unpacked_bits):
+    """Announced leap-second change.
+
+    ``-0.0`` denotes the normative clear-stored-leap-second indication.
+    """
+    return signed_magnitude(msg, 2, unpacked_bits)
 
 
 def zdf301(msg, unpacked_bits):
