@@ -293,9 +293,7 @@ def ssrz_demo(ssrz_file:str, user_llh:list, nav_file:str=None,
                         # print out msg if the low-rate msg was decoded
                         # and it is not either new metadata or time msg
                         # Warning: time offsets are not considered yet
-                        if ((int(read_msg.ssrz_msg_type[-3:]) < 11) &
-                            (int(read_msg.ssrz_msg_type[-3:]) != 9) &
-                            (int(read_msg.ssrz_msg_type[-3:]) != 8) &
+                        if ((int(read_msg.ssrz_msg_type[-3:]) < 8) &
                             (dec_corr.lr is not None) &
                            (dec_corr.tt is not None)):
                             tt_15 = dec_msg.time_tag_15
